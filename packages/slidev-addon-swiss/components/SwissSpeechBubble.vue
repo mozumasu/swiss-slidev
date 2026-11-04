@@ -140,7 +140,7 @@ const src = computed(() => withBase(image))
   clip-path: polygon(100% 0, 0 50%, 100% 100%);
 }
 
-.is-right .swiss-speech__text::before {
+.swiss-speech.is-right .swiss-speech__text::before {
   left: auto;
   right: calc(var(--swiss-speech-tail) * -1);
   clip-path: polygon(0 0, 100% 50%, 0 100%);
@@ -159,8 +159,8 @@ const src = computed(() => withBase(image))
   color: var(--swiss-red-ink, #c80511);
 }
 
-.is-red .swiss-speech__text :deep(code),
-.is-ink .swiss-speech__text :deep(code) {
+.swiss-speech.is-red .swiss-speech__text :deep(code),
+.swiss-speech.is-ink .swiss-speech__text :deep(code) {
   background: rgba(255, 255, 255, 0.18);
   color: var(--swiss-paper-strong, #fff);
 }
