@@ -5,7 +5,8 @@ import { computed } from 'vue'
 
 // 表紙。上端に太い罫線と小さな英字 (eyebrow)、下に左揃えの大きなタイトル → 罫線 → リード文と発表者名。
 // 右上に大きな赤い円を置き、画面の端で見切れさせる。タイトルは円に重なってよい。
-// title は Slidev の予約フィールドで props に届かないため frontmatter から読む
+// title は Slidev の予約フィールドで props に届かないため frontmatter から読む。
+// 改行や強調を入れたいときは ::title:: スロットに書く (*強調* は赤になる)
 const { background, eyebrow, subtitle, titleSize, decor = true } = defineProps<{
   background?: string
   /** 上端の小さな英字 (イベント名・日付など) */
@@ -32,8 +33,8 @@ const style = computed(() => handleBackground(background))
         <p v-if="eyebrow" class="swiss-eyebrow cover__eyebrow">{{ eyebrow }}</p>
       </header>
       <div class="cover__main">
-        <h1 v-if="title" class="swiss-display cover__title" :style="titleSize ? { fontSize: titleSize } : undefined">
-          {{ title }}
+        <h1 v-if="title || $slots.title" class="swiss-display cover__title" :style="titleSize ? { fontSize: titleSize } : undefined">
+          <slot name="title">{{ title }}</slot>
         </h1>
         <hr class="swiss-rule">
         <div class="swiss-grid cover__foot">
@@ -83,6 +84,17 @@ const style = computed(() => handleBackground(background))
   max-width: 85%;
   margin-bottom: 1.4rem;
   white-space: pre-line;
+}
+
+.cover__title :deep(p) {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.cover__title :deep(em) {
+  color: var(--swiss-red-ink);
+  font-style: normal;
 }
 
 .cover__foot {
