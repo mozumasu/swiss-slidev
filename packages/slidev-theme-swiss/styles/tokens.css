@@ -1,0 +1,53 @@
+/* デザイントークン。テーマ・アドオン全体で参照する
+   国際タイポグラフィ様式 (スイススタイル) に寄せる。生成りの紙・墨・1 色のアクセント (赤) だけで組み、
+   角丸・影・グラデーションは使わない。差は文字の大きさと太さ、罫線、余白で付ける。
+   Slidev は themeConfig を body の --slidev-theme-* に入れるので、:root だけでなく body でも解決し直す */
+:root,
+body {
+  /* アクセント。headmatter の themeConfig.accent で差し替えられる */
+  --swiss-red: var(--slidev-theme-accent, #e30613);
+  --swiss-red-ink: color-mix(in srgb, var(--swiss-red) 88%, #000); /* 紙の上で読ませる文字の赤 */
+  --swiss-ink: #111111; /* 本文・罫線 */
+  --swiss-ink-soft: #5a5a5a; /* 補足・キャプション */
+  --swiss-ink-faint: #9a9893; /* 番号の控えめな表示 */
+  --swiss-paper: #f3f1ec; /* 背景。真っ白ではなく生成り */
+  --swiss-paper-strong: #ffffff; /* コード・カードの地 */
+  --swiss-line: #111111; /* 主となる罫線 */
+  --swiss-line-soft: #d4d1ca; /* 区切りの細い罫線 */
+
+  /* 役割ごとの色 */
+  --swiss-primary: var(--swiss-red);
+  --swiss-text: var(--swiss-ink);
+  --swiss-muted: var(--swiss-ink-soft);
+
+  /* 文字。見出しは字間を詰めた Inter Tight、本文は Inter。日本語は Noto Sans JP */
+  --swiss-font-display: 'Inter Tight', 'Inter', 'Noto Sans JP', sans-serif;
+  --swiss-font-body: 'Inter', 'Noto Sans JP', sans-serif;
+  --swiss-font-size-caption: 0.62rem;
+  --swiss-font-size-body: 1rem;
+  --swiss-font-size-heading: 2.4rem;
+  --swiss-font-size-display: 5.2rem;
+  /* 大きな見出しの字間。英字はこれで引き締まる。これより詰めると、日本語の太い見出しが窮屈になる
+     (palt でかなを詰めると、字間が 0 でも窮屈になるので使わない) */
+  --swiss-tracking-tight: -0.02em;
+  --swiss-tracking-caps: 0.14em; /* 小さな英字の見出し (eyebrow) の字間 */
+
+  /* グリッド。スライドの内側を 12 列に割り、レイアウトはこの列に沿わせる */
+  --swiss-columns: 12;
+  --swiss-gutter: 1.25rem;
+  --swiss-slide-padding-x: 3.5rem;
+  --swiss-slide-padding-y: 2.25rem;
+  --swiss-rule: 1px; /* 細い罫線 */
+  --swiss-rule-bold: 4px; /* 太い罫線 (見出しの上・強調) */
+
+  /* 動き。装飾的な動きはせず、表示の切り替えだけに使う */
+  --swiss-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* コードの行ハイライトで強調していない行の濃さ。Slidev の既定 (0.3) では投影すると読めない */
+  --swiss-code-dim: 0.5;
+
+  /* Slidev 組み込み UI (code-group のタブ下線など) が参照する変数 */
+  --slidev-theme-primary: var(--swiss-primary);
+  --slidev-code-background: var(--swiss-paper-strong);
+  --slidev-code-radius: 0;
+}

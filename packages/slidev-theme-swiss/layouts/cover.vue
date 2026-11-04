@@ -1,0 +1,115 @@
+<script setup lang="ts">
+import { useSlideContext } from '@slidev/client'
+import { handleBackground } from '@slidev/client/layoutHelper.ts'
+import { computed } from 'vue'
+
+// 表紙。上端に太い罫線と小さな英字 (eyebrow)、下に左揃えの大きなタイトル → 罫線 → リード文と発表者名。
+// 右上に大きな赤い円を置き、画面の端で見切れさせる。タイトルは円に重なってよい。
+// title は Slidev の予約フィールドで props に届かないため frontmatter から読む
+const { background, eyebrow, subtitle, titleSize, decor = true } = defineProps<{
+  background?: string
+  /** 上端の小さな英字 (イベント名・日付など) */
+  eyebrow?: string
+  /** 右下の行 (発表者名など)。改行はそのまま反映する */
+  subtitle?: string
+  /** タイトルの文字サイズ (CSS の長さ)。長いタイトルで小さくする */
+  titleSize?: string
+  /** false で赤い円を消す */
+  decor?: boolean
+}>()
+
+const { $frontmatter } = useSlideContext()
+const title = computed(() => $frontmatter.title as string | undefined)
+const style = computed(() => handleBackground(background))
+</script>
+
+<template>
+  <div class="slidev-layout cover" :style="style">
+    <span v-if="decor" class="swiss-decor cover__circle" aria-hidden="true" />
+    <div class="swiss-content cover__inner">
+      <header class="cover__head">
+        <hr class="swiss-rule is-bold">
+        <p v-if="eyebrow" class="swiss-eyebrow cover__eyebrow">{{ eyebrow }}</p>
+      </header>
+      <div class="cover__main">
+        <h1 v-if="title" class="swiss-display cover__title" :style="titleSize ? { fontSize: titleSize } : undefined">
+          {{ title }}
+        </h1>
+        <hr class="swiss-rule">
+        <div class="swiss-grid cover__foot">
+          <div v-if="$slots.default" class="cover__lead">
+            <slot />
+          </div>
+          <p v-if="subtitle" class="cover__subtitle">{{ subtitle }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.cover {
+  position: relative;
+  overflow: hidden;
+}
+
+.cover__circle {
+  top: -9rem;
+  right: -6rem;
+  width: 25rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--swiss-red);
+}
+
+.cover__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.slidev-layout .cover__eyebrow {
+  margin-top: 0.6rem;
+}
+
+.cover__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cover__title {
+  max-width: 85%;
+  margin-bottom: 1.4rem;
+  white-space: pre-line;
+}
+
+.cover__foot {
+  margin-top: 0.8rem;
+  align-items: start;
+}
+
+.cover__lead {
+  grid-column: 1 / 8;
+  color: var(--swiss-ink);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.cover__lead :deep(p) {
+  margin: 0;
+}
+
+.slidev-layout .cover__subtitle {
+  grid-column: 9 / 13;
+  margin: 0;
+  font-family: var(--swiss-font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: right;
+  white-space: pre-line;
+}
+</style>

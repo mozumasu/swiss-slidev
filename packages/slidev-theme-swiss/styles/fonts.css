@@ -1,0 +1,5 @@
+/* Web フォントはテーマで読み込む (package.json の fonts.provider は none)。
+   Slidev に任せると、italic: true のときにすべての書体へイタリックの太さを指定した 1 本の URL を作る。
+   Noto Sans JP にはイタリックが無いので Google Fonts がリクエストごと受け付けず、
+   日本語がシステムのゴシックで表示される。書体ごとに持っている軸だけを指定する */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;800;900&family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');

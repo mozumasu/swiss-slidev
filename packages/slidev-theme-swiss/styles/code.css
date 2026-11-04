@@ -1,0 +1,68 @@
+/* コードを入れる枠。code / code-compare / image-left レイアウトで共通に使う。
+   墨の細い枠の上に、ファイル名を白抜きで入れた墨の帯を載せる。
+   枠そのものが罫線を持つので、中のコードブロックは枠を消す。
+   枠は親の高さを上限に、収まらないコードは枠の中でスクロールする */
+.slidev-layout .swiss-code-window {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: var(--swiss-rule) solid var(--swiss-line);
+  background: var(--swiss-paper-strong);
+}
+
+.slidev-layout .swiss-code-window__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 1.5rem;
+  padding: 0.3rem 0.8rem;
+  background: var(--swiss-ink);
+  color: var(--swiss-paper-strong);
+}
+
+/* 帯の左端の赤い正方形を枠の目印にする */
+.slidev-layout .swiss-code-window__mark {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--swiss-red);
+}
+
+.slidev-layout .swiss-code-window__file {
+  font-family: var(--slidev-code-font-family, monospace);
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.slidev-layout .swiss-code-window__body {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.slidev-layout .swiss-code-window__body > * {
+  min-height: 0;
+  margin: 0 !important;
+}
+
+.slidev-layout .swiss-code-window__body .slidev-code-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.slidev-layout .swiss-code-window__body pre.slidev-code {
+  min-height: 0;
+  overflow: auto;
+  border: 0;
+  background: transparent !important;
+}
+
+/* 行ハイライト ({1-5|8-12}) で強調していない行は薄くするが、投影しても読める濃さに留める */
+.slidev-layout .slidev-code .slidev-code-dishonored {
+  opacity: var(--swiss-code-dim);
+}

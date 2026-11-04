@@ -1,0 +1,247 @@
+/* スライドの切り替えと v-click のプリセット。切り替えは frontmatter / headmatter の `transition: swiss-wipe` などで使う。
+   Slidev はトランジション名のクラス (<name>-enter-active 等) を各スライドの .slidev-page に付けるため、
+   ここだけは .slidev-layout の外側をスコープにする (印刷・書き出し時は Slidev が切り替え自体を無効にする)。
+   既定 (package.json の transition) は落ち着いたフェードのままにし、章の変わり目などで選んで使う */
+:root {
+  --swiss-wipe-duration: 0.9s;
+  --swiss-slide-duration: 0.6s;
+  --swiss-circle-duration: 1.1s;
+  --swiss-columns-duration: 0.8s;
+  --swiss-vclick-duration: 0.45s;
+  --swiss-vclick-distance: 0.5rem; /* v-click で出る前に下へずらす量 */
+}
+
+/* swiss-columns で開く列の幅 (0% で閉じ、100% で開き切る)。アニメーションさせるため型を登録する */
+@property --swiss-columns-open {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+/* --- swiss-wipe: 赤い帯が左から右へ画面を覆い、追いかけて次のスライドが現れる ---
+   帯が一足先に進み、次のスライドがそれを追うので、2 つの先端の間が赤い帯として見える。
+   戻るときは swiss-wipe-back (右から左) を使う: `transition: swiss-wipe | swiss-wipe-back` */
+.swiss-wipe-enter-active,
+.swiss-wipe-back-enter-active {
+  z-index: 1;
+  animation: swiss-wipe-reveal var(--swiss-wipe-duration) both;
+}
+
+.swiss-wipe-leave-active,
+.swiss-wipe-back-leave-active {
+  z-index: 0;
+  animation: swiss-hold var(--swiss-wipe-duration) both;
+}
+
+/* 次のスライドより一足先に進む赤い帯 */
+.swiss-wipe-leave-active::after,
+.swiss-wipe-back-leave-active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: var(--swiss-red);
+  animation: swiss-wipe-lead var(--swiss-wipe-duration) both;
+}
+
+.swiss-wipe-back-enter-active {
+  animation-name: swiss-wipe-reveal-back;
+}
+
+.swiss-wipe-back-leave-active::after {
+  animation-name: swiss-wipe-lead-back;
+}
+
+@keyframes swiss-wipe-lead {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    animation-timing-function: var(--swiss-ease);
+  }
+  60%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes swiss-wipe-reveal {
+  0%,
+  25% {
+    clip-path: inset(0 100% 0 0);
+    animation-timing-function: var(--swiss-ease);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes swiss-wipe-lead-back {
+  0% {
+    clip-path: inset(0 0 0 100%);
+    animation-timing-function: var(--swiss-ease);
+  }
+  60%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes swiss-wipe-reveal-back {
+  0%,
+  25% {
+    clip-path: inset(0 0 0 100%);
+    animation-timing-function: var(--swiss-ease);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* 重ねて現れる切り替えでは、次のスライドに紙の地を敷く。
+   スライドの地は透明 (紙は global-bottom.vue の 1 枚) なので、敷かないと前のスライドや赤い面が透けて見える */
+.swiss-wipe-enter-active,
+.swiss-wipe-back-enter-active,
+.swiss-circle-enter-active,
+.swiss-columns-enter-active {
+  background: var(--swiss-paper);
+}
+
+/* 帯が覆い終えるまで、今のスライドを消さずに置いておく */
+@keyframes swiss-hold {
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- swiss-slide: 次のスライドが右から押し出す。戻るときは swiss-slide-back (左から) --- */
+.swiss-slide-enter-active,
+.swiss-slide-leave-active,
+.swiss-slide-back-enter-active,
+.swiss-slide-back-leave-active {
+  transition: translate var(--swiss-slide-duration) var(--swiss-ease);
+}
+
+.swiss-slide-enter-from,
+.swiss-slide-back-leave-to {
+  translate: 100% 0;
+}
+
+.swiss-slide-leave-to,
+.swiss-slide-back-enter-from {
+  translate: -100% 0;
+}
+
+/* --- swiss-circle: 右上 (表紙の赤い円の位置) から赤い円が広がり、その内側から次のスライドが現れる ---
+   円の半径 150% は、右上の角から対角の角まで届く大きさ */
+.swiss-circle-enter-active {
+  z-index: 1;
+  animation: swiss-circle-reveal var(--swiss-circle-duration) both;
+}
+
+.swiss-circle-leave-active {
+  z-index: 0;
+  animation: swiss-hold var(--swiss-circle-duration) both;
+}
+
+.swiss-circle-leave-active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: var(--swiss-red);
+  animation: swiss-circle-lead var(--swiss-circle-duration) both;
+}
+
+@keyframes swiss-circle-lead {
+  0% {
+    clip-path: circle(0% at 100% 0%);
+    animation-timing-function: var(--swiss-ease);
+  }
+  70%,
+  100% {
+    clip-path: circle(150% at 100% 0%);
+  }
+}
+
+@keyframes swiss-circle-reveal {
+  0%,
+  25% {
+    clip-path: circle(0% at 100% 0%);
+    animation-timing-function: var(--swiss-ease);
+  }
+  100% {
+    clip-path: circle(150% at 100% 0%);
+  }
+}
+
+/* --- swiss-columns: 画面を 12 列に割り、どの列も左端から同時に開いて次のスライドが現れる --- */
+.swiss-columns-enter-active {
+  z-index: 1;
+  mask: linear-gradient(90deg, #000 var(--swiss-columns-open), transparent 0) 0 0 / calc(100% / 12) 100% repeat-x;
+  animation: swiss-columns-open var(--swiss-columns-duration) var(--swiss-ease) both;
+}
+
+.swiss-columns-leave-active {
+  z-index: 0;
+  animation: swiss-hold var(--swiss-columns-duration) both;
+}
+
+@keyframes swiss-columns-open {
+  from {
+    --swiss-columns-open: 0%;
+  }
+  to {
+    --swiss-columns-open: 100%;
+  }
+}
+
+/* --- v-click のプリセット: フェードしながら少し上へ ---
+   修飾子 (v-click.fade など) や clickAnimation を指定した要素は Slidev 組み込みの動きに任せる */
+.slidev-layout .slidev-vclick-target:not(.slidev-vclick-anim-none) {
+  transition:
+    opacity var(--swiss-vclick-duration) var(--swiss-ease),
+    translate var(--swiss-vclick-duration) var(--swiss-ease);
+}
+
+.slidev-layout .slidev-vclick-hidden:not([class*='slidev-vclick-anim-']) {
+  translate: 0 var(--swiss-vclick-distance);
+}
+
+/* 書き出し時に途中の状態が写らないよう、印刷ではアニメーションしない */
+html.print .slidev-layout .slidev-vclick-target:not(.slidev-vclick-anim-none) {
+  transition: none;
+}
+
+@media print {
+  .slidev-layout .slidev-vclick-target:not(.slidev-vclick-anim-none) {
+    transition: none;
+  }
+}
+
+/* 動きを減らす設定では、移動・変形をやめて一瞬で切り替える */
+@media (prefers-reduced-motion: reduce) {
+  .swiss-slide-enter-active,
+  .swiss-slide-leave-active,
+  .swiss-slide-back-enter-active,
+  .swiss-slide-back-leave-active,
+  .slidev-layout .slidev-vclick-target:not(.slidev-vclick-anim-none) {
+    transition-duration: 0.01s;
+  }
+
+  .slidev-layout .slidev-vclick-hidden:not([class*='slidev-vclick-anim-']) {
+    translate: none;
+  }
+
+  .swiss-circle-enter-active,
+  .swiss-circle-leave-active,
+  .swiss-circle-leave-active::after,
+  .swiss-columns-enter-active,
+  .swiss-columns-leave-active,
+  .swiss-wipe-enter-active,
+  .swiss-wipe-leave-active,
+  .swiss-wipe-back-enter-active,
+  .swiss-wipe-back-leave-active,
+  .swiss-wipe-leave-active::after,
+  .swiss-wipe-back-leave-active::after {
+    animation-duration: 0.01s;
+  }
+}
