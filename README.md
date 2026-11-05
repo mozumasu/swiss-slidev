@@ -79,7 +79,7 @@ transition: swiss-wipe | swiss-wipe-back
 
 | layout | 用途 | 主な frontmatter |
 | ------ | ---- | ---------------- |
-| `cover` | 表紙 | `title` (改行や強調を入れるときは `::title::` スロットに書く) / `eyebrow` (上端の小さな英字) / `subtitle` (右下の発表者名など) / `titleSize` (長いタイトルを小さくする) / `decor: false` で赤い円を消す |
+| `cover` | 表紙 | `title` (改行や強調を入れるときは `::title::` スロットに書く) / `eyebrow` (上端の小さな英字) / `subtitle` (右下の発表者名など) / `avatar` (発表者名の左の丸いアイコン) / `titleSize` (長いタイトルを小さくする) / `decor: false` で赤い円を消す |
 | `toc` | 目次 | 各スライドの `toc: ラベル` を並べる (`tocLevel: 2` で子項目)。1 つも無ければスライドタイトルの階層を使う。`columns: 2` で 2 段組み |
 | `profile` | 自己紹介 | `name` (末尾の括弧書きは小さく出る) / `affiliation` / `image` / `links` / `sections` / `variant` (`poster` は左下に大きな名前、右の区画の真ん中に丸い写真を置き、項目を下に横一列で並べる。`split` は左に写真と名前、右に項目を縦に積む。既定は `poster`)。項目は本文の箇条書き (`- **Work** 説明`) でも書け、先頭の太字が見出しになる |
 | `default` | 本文 | 見出しは md の `# 見出し` で書く。上端の柱の左に `eyebrow` (無ければデッキのタイトル)、右にページ番号が出る。`heading: side` で見出しを左の 4 列、本文を右の 8 列に置く |
