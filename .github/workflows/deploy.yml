@@ -1,0 +1,77 @@
+name: Deploy examples to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # テーマとアドオンは同じリポジトリにあるので、checkout は 1 回で済む
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # バージョンは package.json の packageManager フィールドから読む
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # カバー画像の書き出し (slidev export) は Chromium を使うため、OS 側の共有ライブラリを入れる。
+      # 見本ごとに実行すると重複するので、lockfile の playwright-chromium と同じ版の
+      # playwright CLI を dlx で 1 回だけ動かす (両者は同じバージョンで公開される)
+      - name: Install Chromium system dependencies
+        run: |
+          set -euo pipefail
+          version=$(perl -ne 'print "$1\n" if /^  playwright-chromium@([0-9.]+):/' pnpm-lock.yaml | sort -u)
+          if [ -z "$version" ] || [ "$(echo "$version" | wc -l)" -ne 1 ]; then
+            echo "::error::playwright-chromium のバージョンを一意に解決できない: '${version}'"
+            exit 1
+          fi
+          pnpm dlx "playwright@${version}" install-deps chromium
+
+      - name: Build examples
+        run: pnpm build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

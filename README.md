@@ -9,6 +9,18 @@
 | [`slidev-theme-swiss`](./packages/slidev-theme-swiss) | 背景・配色・文字・レイアウト (cover / toc / profile / default / section / two-cols / image-left / image-right / code / code-compare / statement / qa / end) |
 | [`slidev-addon-swiss`](./packages/slidev-addon-swiss) | コンポーネント (SwissCard / SwissKeyMessage / SwissSteps / SwissCodeSteps / SwissFeatureList / SwissSpeechBubble / SwissTypeWriter / SwissShape) |
 
+## 見本
+
+レイアウトとコンポーネントの見本 (各パッケージの `example.md`) を GitHub Pages で公開しています。
+
+| ページ | URL |
+| ------ | --- |
+| テーマとアドオンの一覧 | <https://mozumasu.github.io/swiss-slidev/> |
+| テーマの見本 (`slidev-theme-swiss`) | <https://mozumasu.github.io/swiss-slidev/theme/> |
+| アドオンの見本 (`slidev-addon-swiss`) | <https://mozumasu.github.io/swiss-slidev/addon/> |
+
+`main` にマージすると、`.github/workflows/deploy.yml` が `scripts/build.mjs` を実行して公開し直します。手元では、ルートで `pnpm build` を実行すると `dist/` に同じものができます。一覧のサムネイルには、各見本の 1 枚目を PNG に書き出して使います。
+
 ## 使い方
 
 ```md
